@@ -8,14 +8,28 @@
 		<version>2.7.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>com.drosa</groupId>
 	<artifactId>misterfantasysystem</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>misterfantasysystem</name>
+	<packaging>pom</packaging>
+	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Mister Fantasy Automatic System</description>
+
+
 	<properties>
 		<java.version>11</java.version>
 	</properties>
+
+
+	<modules>
+		<module>misterfantasysystem-domain</module>
+		<module>misterfantasysystem-boot</module>
+		<module>misterfantasysystem-application</module>
+		<module>misterfantasysystem-infrastructure/config</module>
+		<module>misterfantasysystem-infrastructure/mister-reader/mister-reader-repository</module>
+	</modules>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -27,13 +41,49 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
+		<finalName>${project.artifactId}-${project.version}</finalName>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Implementation-Title>${project.name}</Implementation-Title>
+							<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+							<!-- Workaround: Don't override Implementation-Version provided by bamboo profile -->
+							<!-- <Implementation-Version>${project.version}</Implementation-Version> -->
+						</manifestEntries>
+						<manifestSections>
+							<manifestSection>
+								<name>${project.name}</name>
+								<manifestEntries>
+									<Version>${project.version}</Version>
+								</manifestEntries>
+							</manifestSection>
+						</manifestSections>
+					</archive>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
