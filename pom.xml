@@ -2,12 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
 
 	<groupId>com.drosa</groupId>
 	<artifactId>misterfantasysystem</artifactId>
@@ -16,11 +10,10 @@
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Mister Fantasy Automatic System</description>
 
-
 	<properties>
 		<java.version>11</java.version>
+		<spring-boot.version>2.7.3</spring-boot.version>
 	</properties>
-
 
 	<modules>
 		<module>misterfantasysystem-domain</module>
@@ -30,61 +23,51 @@
 		<module>misterfantasysystem-infrastructure/mister-reader/mister-reader-repository</module>
 	</modules>
 
+	<dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<artifactId>spring-boot-dependencies</artifactId>
+			<version>${spring-boot.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>mic-misterfantasysystem-domain</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>mic-misterfantasysystem-infrastructure-mister-reader-repository</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.24</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<Implementation-Title>${project.name}</Implementation-Title>
-							<Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-							<!-- Workaround: Don't override Implementation-Version provided by bamboo profile -->
-							<!-- <Implementation-Version>${project.version}</Implementation-Version> -->
-						</manifestEntries>
-						<manifestSections>
-							<manifestSection>
-								<name>${project.name}</name>
-								<manifestEntries>
-									<Version>${project.version}</Version>
-								</manifestEntries>
-							</manifestSection>
-						</manifestSections>
-					</archive>
-				</configuration>
-			</plugin>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<executions>
+				<execution>
+					<goals>
+						<goal>repackage</goal>
+					</goals>
+					<configuration>
+						<mainClass>com.drosa.misterfantasysystem.boot.Application</mainClass>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
 		</plugins>
 	</build>
 

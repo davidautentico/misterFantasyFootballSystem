@@ -1,6 +1,6 @@
-package com.drosa.misterfantasysystem.infrastructure.mistereader.repository.entities;
+package com.drosa.misterfantasysystem.domain.entities;
 
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.enums.PlayerPosition;
+import com.drosa.misterfantasysystem.domain.enums.PlayerPosition;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.drosa.misterfantasysystem.infrastructure.mistereader.repository.usecases;
+package com.drosa.misterfantasysystem.domain.usecases;
 
 import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.helpers.HttpHelper;
 import org.junit.jupiter.api.Test;
@@ -20,12 +20,12 @@ class MisterPlayerInfoExtractorUseCaseTest {
 
   private final int RETRY_TIME_IN_MS = 200;
 
-  @Test
+  /*@Test
   public void testMisterConnectivity() {
     HttpHelper httpHelper = new HttpHelper(MAX_TRIES, RETRY_TIME_IN_MS);
     MisterPlayerInfoExtractorUseCase misterPlayerInfoExtractorUseCase =
         new MisterPlayerInfoExtractorUseCase(MISTER_URL, LOGIN_URL, MARKET_URL, PLAYER_BASE_URL, httpHelper);
 
     misterPlayerInfoExtractorUseCase.dispatch();
-  }
+  }*/
 }

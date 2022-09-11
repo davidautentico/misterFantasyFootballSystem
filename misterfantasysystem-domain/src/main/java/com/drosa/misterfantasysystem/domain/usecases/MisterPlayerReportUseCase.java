@@ -1,22 +1,9 @@
-package com.drosa.misterfantasysystem.infrastructure.mistereader.repository.usecases;
+package com.drosa.misterfantasysystem.domain.usecases;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.entities.MisterPlayer;
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.entities.MisterPlayerReport;
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.entities.MisterPlayerTop;
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.enums.PlayerPosition;
+import com.drosa.misterfantasysystem.domain.entities.MisterPlayerReport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Provide list of good player to buy from the market or others players different from the owner.
@@ -28,12 +15,15 @@ public class MisterPlayerReportUseCase {
 
   public final MisterPlayerInfoExtractorUseCase misterPlayerInfoExtractorUseCase;
 
-  public final JavaMailSenderImpl mailSender;
+  //public final JavaMailSenderImpl mailSender;
 
   public final String ownerUser;
 
-
   public MisterPlayerReport dispatch() {
+    return MisterPlayerReport.builder().build();
+  }
+
+  /*public MisterPlayerReport dispatch() {
     // 1. Find the actual player list
     List<MisterPlayer> actualPlayerList =
         misterPlayerInfoExtractorUseCase.dispatch().getPlayers().stream().filter(Objects::nonNull).collect(
@@ -150,6 +140,6 @@ public class MisterPlayerReportUseCase {
         .mfTop(mfMisterPlayerTop)
         .fwTop(fwMisterPlayerTop)
         .build();
-  }
+  }*/
 
 }

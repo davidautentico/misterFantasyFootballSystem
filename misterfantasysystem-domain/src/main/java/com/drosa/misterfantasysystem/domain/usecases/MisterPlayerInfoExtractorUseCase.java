@@ -1,33 +1,9 @@
-package com.drosa.misterfantasysystem.infrastructure.mistereader.repository.usecases;
+package com.drosa.misterfantasysystem.domain.usecases;
 
-import static java.lang.Thread.sleep;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.entities.MisterPlayer;
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.entities.MisterPlayerInfo;
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.enums.PlayerPosition;
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.enums.TeamRef;
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.helpers.HttpHelper;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.drosa.misterfantasysystem.domain.entities.MisterPlayerInfo;
+import com.drosa.misterfantasysystem.domain.repositories.MisterReaderRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class MisterPlayerInfoExtractorUseCase {
+
+  private final MisterReaderRepository misterReaderRepository;
 
   @Value("${mister.base-url:https://mister.mundodeportivo.com/}")
   private final String misterBaseUrl;
@@ -48,12 +26,16 @@ public class MisterPlayerInfoExtractorUseCase {
   @Value("${mister.players-url:https://mister.mundodeportivo.com/feed#players}")
   private final String misterBasePlayerUrl;
 
-  private final HttpHelper httpHelper;
+  // private final HttpHelper httpHelper;
+
+  public MisterPlayerInfo dispatch() {
+    return MisterPlayerInfo.builder().build();
+  }
 
   /**
    * Extract player stats: value, clause, points, position, owner, isInMarket
    */
-  public MisterPlayerInfo dispatch() {
+ /* public MisterPlayerInfo dispatch() {
 
     List<MisterPlayer> playerList = null;
     int gameWeek = 0;
@@ -276,5 +258,5 @@ public class MisterPlayerInfoExtractorUseCase {
         .isInMarket(isInMarket)
         .build();
 
-  }
+  }*/
 }

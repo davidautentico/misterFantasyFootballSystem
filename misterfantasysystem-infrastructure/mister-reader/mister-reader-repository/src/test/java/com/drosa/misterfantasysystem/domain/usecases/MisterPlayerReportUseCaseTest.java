@@ -1,17 +1,7 @@
-package com.drosa.misterfantasysystem.infrastructure.mistereader.repository.usecases;
+package com.drosa.misterfantasysystem.domain.usecases;
 
-import static java.lang.Thread.sleep;
-
-import java.util.Properties;
-
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.entities.MisterPlayerReport;
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.helpers.HttpHelper;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @ExtendWith(MockitoExtension.class)
 class MisterPlayerReportUseCaseTest {
@@ -30,7 +20,7 @@ class MisterPlayerReportUseCaseTest {
 
   private final int RETRY_TIME_IN_MS = 200;
 
-  @SneakyThrows
+  /*@SneakyThrows
   @Test
   public void testMisterBuyableReport() {
     HttpHelper httpHelper = new HttpHelper(MAX_TRIES, RETRY_TIME_IN_MS);
@@ -75,5 +65,5 @@ class MisterPlayerReportUseCaseTest {
       sleep(15 * 60 * 1000);
       tries++;
     }
-  }
+  }*/
 }

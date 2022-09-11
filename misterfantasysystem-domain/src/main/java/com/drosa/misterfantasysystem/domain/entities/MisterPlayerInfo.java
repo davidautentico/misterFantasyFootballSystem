@@ -1,4 +1,4 @@
-package com.drosa.misterfantasysystem.infrastructure.mistereader.repository.entities;
+package com.drosa.misterfantasysystem.domain.entities;
 
 import java.time.Instant;
 import java.util.List;

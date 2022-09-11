@@ -1,4 +1,4 @@
-package com.drosa.misterfantasysystem.infrastructure.mistereader.repository.enums;
+package com.drosa.misterfantasysystem.domain.enums;
 
 public enum PlayerPosition {
   NONE("NONE"),
