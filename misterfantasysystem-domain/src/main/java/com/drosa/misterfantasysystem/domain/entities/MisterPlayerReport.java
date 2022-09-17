@@ -9,9 +9,15 @@ import lombok.ToString;
 
 @RequiredArgsConstructor
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @ToString
 public class MisterPlayerReport {
+
+  private final int totalOwnerValue;
+
+  private final int totalOwnerPoints;
+
+  private final List<MisterTeam> misterTeamBestTeams;
 
   private final MisterPlayerTop gkTop;
 
@@ -21,11 +27,15 @@ public class MisterPlayerReport {
 
   private final MisterPlayerTop fwTop;
 
+  private final MisterPlayerInfo misterPlayerInfo;
+
   private final List<MisterPlayer> marketPlayers;
 
   private final List<MisterPlayer> ownerPlayers;
 
   public String printReport() {
+    String ownerStats = "**** Points and Value: " + totalOwnerPoints + " " + totalOwnerValue;
+
     String gkTopLine = "*** GK TOP ***" + "\n" + gkTop;
     String dfTopLine = "*** DF TOP ***" + "\n" + dfTop;
     String mfTopLine = "*** MF TOP ***" + "\n" + mfTop;
@@ -44,14 +54,21 @@ public class MisterPlayerReport {
       ownerStr.append(ownerPlayer.printStats()).append(" \n ");
     }
 
-    return gkTopLine + "\n" + dfTopLine + "\n" + mfTopLine + "\n" + fwTopLine + "\n"
+    String ownerMisterTeamsLine = "*** Mister Teams ***";
+    StringBuilder misterTeams = new StringBuilder();
+    for (MisterTeam misterTeam : misterTeamBestTeams) {
+      misterTeams.append(misterTeam.printInfo()).append(" \n ");
+    }
+
+    return ownerStats + "\n" + gkTopLine + "\n" + dfTopLine + "\n" + mfTopLine + "\n" + fwTopLine + "\n"
         + marketPlayersLine + "\n" + playersStr + "\n"
         + ownerPlayersLine + "\n" + ownerStr + "\n"
+        + ownerMisterTeamsLine + "\n" + misterTeams + "\n"
         ;
   }
 
   @Override
-  public int hashCode(){
+  public int hashCode() {
     return marketPlayers.hashCode();
   }
 }

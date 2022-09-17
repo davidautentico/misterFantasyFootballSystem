@@ -3,6 +3,7 @@ package com.drosa.misterfantasysystem.domain.entities;
 import java.util.List;
 
 import com.drosa.misterfantasysystem.domain.enums.PlayerPosition;
+import com.drosa.misterfantasysystem.domain.enums.TeamRef;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.ToString;
 
 @RequiredArgsConstructor
 @Getter
-@Builder
+@Builder(toBuilder=true)
 @ToString
 @EqualsAndHashCode
 public class MisterPlayer {
@@ -24,6 +25,8 @@ public class MisterPlayer {
 
   private final PlayerPosition position;
 
+  private final TeamRef teamRef;
+
   private final int actualAverage;
 
   private final List<Integer> actualStreak;
@@ -31,6 +34,8 @@ public class MisterPlayer {
   private final long value;
 
   private final int totalPoints;
+
+  private final int totalPoints2122;
 
   private final long  clause;
 
@@ -49,9 +54,9 @@ public class MisterPlayer {
         + " | "+ this.getValue() / 1000
         + " | "+ this.getClause() / 1000
         + " | "+ this.getTotalPoints()
+        + " | "+ this.getTotalPoints2122()
         + " | " + String.format("%,.2f", performance)//.replace(',', '.')
-        + " | " + this.getOwner()
-        + " | " + this.isInMarket();
+        + " | " + this.getOwner();
   }
 
 }

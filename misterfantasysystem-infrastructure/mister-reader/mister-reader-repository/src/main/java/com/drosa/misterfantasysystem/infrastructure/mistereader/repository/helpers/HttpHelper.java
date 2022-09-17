@@ -5,6 +5,7 @@ import static java.lang.Thread.sleep;
 import java.io.IOException;
 import java.util.Map;
 
+import com.drosa.misterfantasysystem.domain.repositories.ConfigurationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,21 +19,17 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class HttpHelper {
 
-  @Value("${mister.http.max-tries:3}")
-  private final int maxTries;
-
-  @Value("${mister.http.retry-time-in-ms:100}")
-  private final int retryTimeInMS;
+  private final ConfigurationRepository configurationRepository;
 
   @SneakyThrows
   public Document connect(String url, Map<String, String> cookies) {
     Document doc = null;
     int numTries = 0;
 
-    while ((doc == null) && (numTries < maxTries)) {
+    while ((doc == null) && (numTries < configurationRepository.getMaxRetries())) {
       doc = internalConnect(url, cookies);
       numTries++;
-      sleep(retryTimeInMS);
+      sleep(configurationRepository.getRetryTimeInMs());
     }
 
     if (doc==null){

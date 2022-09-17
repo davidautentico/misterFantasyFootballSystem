@@ -1,38 +1,86 @@
 package com.drosa.misterfantasysystem.domain.usecases;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import com.drosa.misterfantasysystem.domain.entities.MisterPlayer;
+import com.drosa.misterfantasysystem.domain.entities.MisterPlayerInfo;
 import com.drosa.misterfantasysystem.domain.entities.MisterPlayerReport;
-import lombok.RequiredArgsConstructor;
+import com.drosa.misterfantasysystem.domain.entities.MisterPlayerTop;
+import com.drosa.misterfantasysystem.domain.entities.MisterTeam;
+import com.drosa.misterfantasysystem.domain.enums.PlayerPosition;
+import com.drosa.misterfantasysystem.domain.helpers.MisterBestTeamHelper;
+import com.drosa.misterfantasysystem.domain.repositories.ConfigurationRepository;
+import com.drosa.misterfantasysystem.domain.repositories.MisterReaderRepository;
+import com.drosa.misterfantasysystem.domain.services.MisterPlayerTeamChooser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Provide list of good player to buy from the market or others players different from the owner.
  */
-@RequiredArgsConstructor
 @Component
 @Slf4j
 public class MisterPlayerReportUseCase {
 
-  public final MisterPlayerInfoExtractorUseCase misterPlayerInfoExtractorUseCase;
+  private final MisterReaderRepository misterReaderRepository;
 
-  //public final JavaMailSenderImpl mailSender;
+  private final ConfigurationRepository configurationRepository;
 
-  public final String ownerUser;
+  private final MisterPlayerTeamChooser misterPlayerTeamChooser;
 
-  public MisterPlayerReport dispatch() {
-    return MisterPlayerReport.builder().build();
+  private final MisterBestTeamHelper misterBestTeamHelper;
+
+  public MisterPlayerReportUseCase(MisterReaderRepository misterReaderRepository,
+      ConfigurationRepository configurationRepository,
+      MisterPlayerTeamChooser misterPlayerTeamChooser,
+      MisterBestTeamHelper misterBestTeamHelper) {
+    this.misterReaderRepository = misterReaderRepository;
+    this.configurationRepository = configurationRepository;
+    this.misterPlayerTeamChooser = misterPlayerTeamChooser;
+    this.misterBestTeamHelper = misterBestTeamHelper;
   }
 
-  /*public MisterPlayerReport dispatch() {
+  public MisterPlayerReport dispatch() {
+
+    final String ownerUser = configurationRepository.getOwner();
+
+    // obtención de la información de los jugadores
+    MisterPlayerInfo misterPlayerInfo = misterReaderRepository.getPlayerInfo();
+
     // 1. Find the actual player list
     List<MisterPlayer> actualPlayerList =
-        misterPlayerInfoExtractorUseCase.dispatch().getPlayers().stream().filter(Objects::nonNull).collect(
+        misterPlayerInfo.getPlayers().stream().filter(Objects::nonNull).collect(
             Collectors.toList());
 
+    // 2.- print sort by 21/22 stats
+    System.out.println("**** Sorted BY 21/22***");
+    List<MisterPlayer> players2122 = actualPlayerList.stream()
+        .filter(misterPlayer -> misterPlayer.getTotalPoints2122() > 90)
+        .sorted(Comparator.comparing(MisterPlayer::getPosition).thenComparing(MisterPlayer::getTotalPoints2122).reversed())
+        .collect(Collectors.toList());
+
+    players2122.forEach(player -> {
+      System.out.println(player.getName()
+          + " " + player.getSurname() + ";" + player.getTeamRef() + ";" + player.getPosition() + ";" + player.getTotalPoints2122());
+    });
+    System.out.println("**** End 21/22");
+
+    // elaboración del informe
     // 2. Extract metrics from owner team
     List<MisterPlayer> ownerPlayers = actualPlayerList.stream().filter(player -> player.getOwner().equalsIgnoreCase(ownerUser))
         .sorted(Comparator.comparing(MisterPlayer::getPosition))
         .collect(Collectors.toList());
+
+    MisterTeam ownerBestTeam = misterBestTeamHelper.getBestTeam(ownerPlayers);
+    int totalOwnerValue = ownerPlayers.stream().map(MisterPlayer::getValue).reduce(0L, Long::sum).intValue();
+    int totalOwnerPoints = ownerBestTeam.getTeamPoints();
+
+    List<MisterTeam> misterTeamList = misterPlayerTeamChooser.dispatch(actualPlayerList, 70300000, ownerUser);
 
     System.out.println("*** OWNER PLAYERS ***");
     ownerPlayers.forEach(player -> {
@@ -133,6 +181,10 @@ public class MisterPlayerReportUseCase {
         .build();
 
     return MisterPlayerReport.builder()
+        .totalOwnerPoints(totalOwnerPoints)
+        .totalOwnerValue(totalOwnerValue)
+        .misterTeamBestTeams(misterTeamList)
+        .misterPlayerInfo(misterPlayerInfo)
         .marketPlayers(marketPlayers)
         .ownerPlayers(ownerPlayers)
         .gkTop(gkMisterPlayerTop)
@@ -140,6 +192,8 @@ public class MisterPlayerReportUseCase {
         .mfTop(mfMisterPlayerTop)
         .fwTop(fwMisterPlayerTop)
         .build();
-  }*/
+
+  }
+
 
 }
