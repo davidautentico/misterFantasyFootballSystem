@@ -13,6 +13,8 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class MisterTeam {
 
+  private String owner;
+
   private int teamValue;
 
   private int teamPoints;

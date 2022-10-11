@@ -3,6 +3,7 @@ package com.drosa.misterfantasysystem.boot.watchdog;
 import static java.lang.Thread.sleep;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import com.drosa.misterfantasysystem.boot.repositories.HelperConfigRepository;
@@ -51,35 +52,38 @@ public class MisterWatchDogProcess implements
     props.put("mail.smtp.starttls.enable", "true");
     props.put("mail.debug", "true");
 
-    int numTries = 120;
+    int numTries = 12000;
     int tries = 0;
     int lastHashCode = -1;
     MisterTeam bestTeam = MisterTeam.builder().teamPoints(0).build();
     while (tries < numTries) {
-      MisterPlayerReport misterPlayerReport = misterPlayerReportUseCase.dispatch();
+      Optional<MisterPlayerReport> optionalMisterPlayerReport = misterPlayerReportUseCase.dispatch();
 
-      boolean hasToUpdated = false;
-      if (misterPlayerReport.getMisterTeamBestTeams().size() > 0) {
-        hasToUpdated = misterPlayerReport.getMisterTeamBestTeams().get(0).getTeamPoints() > bestTeam.getTeamPoints();
-      }
-
-      int hashCode = misterPlayerReport.hashCode();
-      if (hashCode != lastHashCode || hasToUpdated) {
-        if (hasToUpdated) {
-          bestTeam = misterPlayerReport.getMisterTeamBestTeams().get(0).toBuilder().build();
+      if (optionalMisterPlayerReport.isPresent()) {
+        MisterPlayerReport misterPlayerReport = optionalMisterPlayerReport.get();
+        boolean hasToUpdated = false;
+        if (misterPlayerReport.getMisterTeamBestTeams().size() > 0) {
+          hasToUpdated = misterPlayerReport.getMisterTeamBestTeams().get(0).getTeamPoints() > bestTeam.getTeamPoints();
         }
-        MisterPlayerReport actualMisterPlayerReport = misterPlayerReport.toBuilder().misterTeamBestTeams(List.of(bestTeam)).build();
-        // TEST SEND EMAIL
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo("davidautentico@gmail.com");
 
-        msg.setSubject("Mister Report, best team found: " + hasToUpdated);
+        int hashCode = misterPlayerReport.hashCode();
+        if (hashCode != lastHashCode || hasToUpdated) {
+          if (hasToUpdated) {
+            bestTeam = misterPlayerReport.getMisterTeamBestTeams().get(0).toBuilder().build();
+          }
+          MisterPlayerReport actualMisterPlayerReport = misterPlayerReport.toBuilder().misterTeamBestTeams(List.of(bestTeam)).build();
+          // TEST SEND EMAIL
+          SimpleMailMessage msg = new SimpleMailMessage();
+          msg.setTo("davidautentico@gmail.com");
 
-        msg.setText(actualMisterPlayerReport.printReport() + " \n hashCode=" + hashCode);
+          msg.setSubject("Mister Report, best team found: " + hasToUpdated);
 
-        mailSender.send(msg);
+          msg.setText(actualMisterPlayerReport.printReport() + " \n hashCode=" + hashCode);
 
-        lastHashCode = hashCode;
+          mailSender.send(msg);
+
+          lastHashCode = hashCode;
+        }
       }
       sleep(5 * 60 * 1000);
       tries++;

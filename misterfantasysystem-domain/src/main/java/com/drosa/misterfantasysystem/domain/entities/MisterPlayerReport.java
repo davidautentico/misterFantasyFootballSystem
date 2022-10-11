@@ -13,6 +13,8 @@ import lombok.ToString;
 @ToString
 public class MisterPlayerReport {
 
+  private final List<MisterTeam> allUserBestTeam;
+
   private final int totalOwnerValue;
 
   private final int totalOwnerPoints;
@@ -41,6 +43,12 @@ public class MisterPlayerReport {
     String mfTopLine = "*** MF TOP ***" + "\n" + mfTop;
     String fwTopLine = "*** FW TOP ***" + "\n" + fwTop;
 
+    String bestUsersTeamsLine = "*** TOP User teams ***";
+    StringBuilder userStr = new StringBuilder();
+    for (MisterTeam misterTeam : allUserBestTeam) {
+      userStr.append(misterTeam.getOwner() + " points = " + misterTeam.getTeamPoints()).append(" \n ");
+    }
+
     String marketPlayersLine = "*** Free Market Players ***";
     StringBuilder playersStr = new StringBuilder();
     String ownerPlayersLine = "*** Owner Players ***";
@@ -60,7 +68,9 @@ public class MisterPlayerReport {
       misterTeams.append(misterTeam.printInfo()).append(" \n ");
     }
 
-    return ownerStats + "\n" + gkTopLine + "\n" + dfTopLine + "\n" + mfTopLine + "\n" + fwTopLine + "\n"
+    return ownerStats + "\n"
+        + bestUsersTeamsLine + "\n" + userStr + "\n"
+        + gkTopLine + "\n" + dfTopLine + "\n" + mfTopLine + "\n" + fwTopLine + "\n"
         + marketPlayersLine + "\n" + playersStr + "\n"
         + ownerPlayersLine + "\n" + ownerStr + "\n"
         + ownerMisterTeamsLine + "\n" + misterTeams + "\n"
