@@ -32,6 +32,6 @@ public class MisterPlayerHelper {
   }
 
   public double getPerformance(MisterPlayer misterPlayer, String owner) {
-    return misterPlayer.getTotalPoints() * 1.0 / (getPlayerValue(misterPlayer, owner) * 1.0 / 1000000);
+    return misterPlayer.getStreakPerformance() / (getPlayerValue(misterPlayer, owner) * 1.0 / 1000000);
   }
 }

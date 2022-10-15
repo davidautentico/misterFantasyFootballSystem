@@ -95,27 +95,27 @@ public class MisterPlayerReportUseCase {
 
     List<MisterPlayer> ownerDFs = ownerPlayers.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.DF))
-        .sorted(Comparator.comparing(MisterPlayer::getPosition).thenComparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getPosition).thenComparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(3).collect(Collectors.toList());
     int lastDfIndex = ownerDFs.size() > 2 ? 2 : ownerDFs.size() - 1;
-    int ownerdfPoints = ownerDFs.get(lastDfIndex).getTotalPoints();
-    double ownerdfPerformance = ownerDFs.get(lastDfIndex).getTotalPoints() * 1.0 / (ownerDFs.get(lastDfIndex).getValue() * 1.0 / 1000000);
+    double ownerdfPoints = ownerDFs.get(lastDfIndex).getStreakPerformance();
+    double ownerdfPerformance = ownerDFs.get(lastDfIndex).getStreakPerformance() / (ownerDFs.get(lastDfIndex).getValue() * 1.0 / 1000000);
 
     List<MisterPlayer> ownerMFs = ownerPlayers.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.MF))
-        .sorted(Comparator.comparing(MisterPlayer::getPosition).thenComparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getPosition).thenComparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(4).collect(Collectors.toList());
     int lastMfIndex = ownerMFs.size() > 3 ? 3 : ownerMFs.size() - 1;
-    int ownermfPoints = ownerMFs.get(lastMfIndex).getTotalPoints();
-    double ownermfPerformance = ownerMFs.get(lastMfIndex).getTotalPoints() * 1.0 / (ownerMFs.get(lastMfIndex).getValue() * 1.0 / 1000000);
+    double ownermfPoints = ownerMFs.get(lastMfIndex).getStreakPerformance();
+    double ownermfPerformance = ownerMFs.get(lastMfIndex).getStreakPerformance() / (ownerMFs.get(lastMfIndex).getValue() * 1.0 / 1000000);
 
     List<MisterPlayer> ownerFWs = ownerPlayers.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.FW))
-        .sorted(Comparator.comparing(MisterPlayer::getPosition).thenComparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getPosition).thenComparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(3).collect(Collectors.toList());
     int lastFWIndex = ownerFWs.size() > 2 ? 2 : ownerFWs.size() - 1;
-    int ownerfwPoints = ownerFWs.get(lastFWIndex).getTotalPoints();
-    double ownerfwPerformance = ownerFWs.get(lastFWIndex).getTotalPoints() * 1.0 / (ownerFWs.get(lastFWIndex).getValue() * 1.0 / 1000000);
+    double ownerfwPoints = ownerFWs.get(lastFWIndex).getStreakPerformance();
+    double ownerfwPerformance = ownerFWs.get(lastFWIndex).getStreakPerformance() / (ownerFWs.get(lastFWIndex).getValue() * 1.0 / 1000000);
 
     MisterTeam ownerBestTeam = misterBestTeamHelper.getBestTeamStrategic(ownerPlayers);
     int totalOwnerValue = ownerPlayers.stream().map(MisterPlayer::getValue).reduce(0L, Long::sum).intValue();
@@ -132,7 +132,7 @@ public class MisterPlayerReportUseCase {
             player.isInMarket() || misterPlayerHelper.playerNotOwner(player, ownerUser))
         .map(player -> {
           MarketRecommendation marketRecommendation = MarketRecommendation.NONE;
-          int playerPoints = player.getTotalPoints();
+          double playerPoints = player.getStreakPerformance();
           double playerPerformance = misterPlayerHelper.getPerformance(player, ownerUser);
 
           if (player.getPosition() == PlayerPosition.DF) {
@@ -163,8 +163,10 @@ public class MisterPlayerReportUseCase {
           return player.toBuilder().marketRecommendation(marketRecommendation).build();
         })
         .filter(misterPlayer -> misterPlayer.getMarketRecommendation() == MarketRecommendation.IMPORTANT_BUY
-            || misterPlayer.getMarketRecommendation() == MarketRecommendation.NORMAL_BUY && !misterPlayerHelper.isPlayer(misterPlayer))
-        .sorted(Comparator.comparing(MisterPlayer::getTotalPoints).reversed())
+            || misterPlayer.getMarketRecommendation() == MarketRecommendation.NORMAL_BUY
+            //&& !misterPlayerHelper.isPlayer(misterPlayer)
+        )
+        .sorted(MisterPlayer::compareTo)
         .collect(Collectors.toList());
 
     System.out.println("*** NON FREE MARKET PLAYERS ***");
@@ -179,52 +181,46 @@ public class MisterPlayerReportUseCase {
             && !ObjectUtils.isEmpty(player.getOwner()))
     ).collect(Collectors.toList());
 
-    // 4. Extract elected players from 3 vs 2
-    List<MisterPlayer> elected = purchablePlayers.stream().filter(player -> {
-      double performance = player.getTotalPoints() * 1.0 / (player.getClause() * 1.0 / 1000000);
-
-      return Boolean.TRUE;
-    }).collect(Collectors.toList());
 
     // COLLECT STATS
     List<MisterPlayer> gkPlayers = actualPlayerList.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.GK))
-        .sorted(Comparator.comparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(6)
         .collect(Collectors.toList());
-    double gkAvgPoints = gkPlayers.stream().mapToDouble(MisterPlayer::getTotalPoints).average().getAsDouble();
+    double gkAvgPoints = gkPlayers.stream().mapToDouble(MisterPlayer::getStreakPerformance).average().getAsDouble();
     double gkPerformance =
-        gkPlayers.stream().mapToDouble(misterPlayer -> misterPlayer.getTotalPoints() * 1.0 / (misterPlayer.getValue() * 1.0 / 1000000))
+        gkPlayers.stream().mapToDouble(misterPlayer -> misterPlayer.getStreakPerformance() / (misterPlayer.getValue() * 1.0 / 1000000))
             .average().getAsDouble();
 
     List<MisterPlayer> dfPlayers = actualPlayerList.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.DF))
-        .sorted(Comparator.comparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(18)
         .collect(Collectors.toList());
-    double dfAvgPoints = dfPlayers.stream().mapToDouble(MisterPlayer::getTotalPoints).average().getAsDouble();
+    double dfAvgPoints = dfPlayers.stream().mapToDouble(MisterPlayer::getStreakPerformance).average().getAsDouble();
     double dfPerformance =
-        dfPlayers.stream().mapToDouble(misterPlayer -> misterPlayer.getTotalPoints() * 1.0 / (misterPlayer.getValue() * 1.0 / 1000000))
+        dfPlayers.stream().mapToDouble(misterPlayer -> misterPlayer.getStreakPerformance() / (misterPlayer.getValue() * 1.0 / 1000000))
             .average().getAsDouble();
 
     List<MisterPlayer> mfPlayers = actualPlayerList.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.MF))
-        .sorted(Comparator.comparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(24)
         .collect(Collectors.toList());
-    double mfAvgPoints = mfPlayers.stream().mapToDouble(MisterPlayer::getTotalPoints).average().getAsDouble();
+    double mfAvgPoints = mfPlayers.stream().mapToDouble(MisterPlayer::getStreakPerformance).average().getAsDouble();
     double mfPerformance =
-        mfPlayers.stream().mapToDouble(misterPlayer -> misterPlayer.getTotalPoints() * 1.0 / (misterPlayer.getValue() * 1.0 / 1000000))
+        mfPlayers.stream().mapToDouble(misterPlayer -> misterPlayer.getStreakPerformance() * 1.0 / (misterPlayer.getValue() * 1.0 / 1000000))
             .average().getAsDouble();
 
     List<MisterPlayer> fwPlayers = actualPlayerList.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.FW))
-        .sorted(Comparator.comparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(18)
         .collect(Collectors.toList());
-    double fwAvgPoints = fwPlayers.stream().mapToDouble(MisterPlayer::getTotalPoints).average().getAsDouble();
+    double fwAvgPoints = fwPlayers.stream().mapToDouble(MisterPlayer::getStreakPerformance).average().getAsDouble();
     double fwPerformance =
-        fwPlayers.stream().mapToDouble(misterPlayer -> misterPlayer.getTotalPoints() * 1.0 / (misterPlayer.getValue() * 1.0 / 1000000))
+        fwPlayers.stream().mapToDouble(misterPlayer -> misterPlayer.getStreakPerformance() * 1.0 / (misterPlayer.getValue() * 1.0 / 1000000))
             .average().getAsDouble();
 
     MisterPlayerTop gkMisterPlayerTop = MisterPlayerTop.builder()

@@ -32,6 +32,8 @@ public class MisterPlayer {
 
   private final List<Integer> actualStreak;
 
+  private final double streakPerformance;
+
   private final long value;
 
   private final int totalPoints;
@@ -51,14 +53,15 @@ public class MisterPlayer {
   private final MarketRecommendation marketRecommendation;
 
   public String printStats() {
-    double performanceV = this.getTotalPoints() * 1.0 / (this.getValue() * 1.0 / 1000000);
-    double performanceC = this.getTotalPoints() * 1.0 / (this.getClause() * 1.0 / 1000000);
+    double performanceV = this.getStreakPerformance() / (this.getValue() * 1.0 / 1000000);
+    double performanceC = this.getStreakPerformance() / (this.getClause() * 1.0 / 1000000);
     return this.getName() + " " + this.getSurname()
         + " | " + this.getPosition()
         + " | " + this.getValue() / 1000
         + " | " + this.getClause() / 1000
         + " | " + this.getTotalPoints()
-        + " | " + this.getTotalPoints2122()
+        //+ " | " + this.getTotalPoints2122()
+        + " | " + String.format("%,.2f", this.getStreakPerformance())
         + " | " + String.format("%,.2f", performanceV) + " / " + String.format("%,.2f", performanceC)
         + " | " + this.getOwner()
         + " | " + getCleanRecommendation()
@@ -69,4 +72,10 @@ public class MisterPlayer {
     return this.getMarketRecommendation() != null ? this.getMarketRecommendation().name() : "";
   }
 
+  public int compareTo(MisterPlayer player) {
+    double performance1 = this.getStreakPerformance() / this.getClause();
+    double performance2 = player.getStreakPerformance() / player.getClause();
+
+    return Double.compare(performance1,performance2);
+  }
 }

@@ -15,34 +15,33 @@ public class MisterBestTeamHelper {
   private MisterTeam getBestTeamTactic(List<MisterPlayer> playerList, int dfNumber, int mfNumber, int fwNumber) {
     List<MisterPlayer> gkPlayers = playerList.stream()
         .filter(misterPlayer -> misterPlayer.getPosition() == PlayerPosition.GK)
-        .sorted(Comparator.comparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(1)
         .collect(Collectors.toList());
     List<MisterPlayer> dfPlayers = playerList.stream().filter(misterPlayer -> misterPlayer.getPosition() == PlayerPosition.DF)
-        .sorted(Comparator.comparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(dfNumber)
         .collect(Collectors.toList());
     List<MisterPlayer> mfPlayers = playerList.stream().filter(misterPlayer -> misterPlayer.getPosition() == PlayerPosition.MF)
-        .sorted(Comparator.comparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(mfNumber)
         .collect(Collectors.toList());
     List<MisterPlayer> fwPlayers = playerList.stream().filter(misterPlayer -> misterPlayer.getPosition() == PlayerPosition.FW)
-        .sorted(Comparator.comparing(MisterPlayer::getTotalPoints).reversed())
+        .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(fwNumber)
         .collect(Collectors.toList());
 
-    int gkPoints = gkPlayers.stream().map(MisterPlayer::getTotalPoints).reduce(0, Integer::sum);
-    int dfPoints = dfPlayers.stream().map(MisterPlayer::getTotalPoints).reduce(0, Integer::sum);
-    int mfPoints = mfPlayers.stream().map(MisterPlayer::getTotalPoints).reduce(0, Integer::sum);
-    int fwPoints = fwPlayers.stream().map(MisterPlayer::getTotalPoints).reduce(0, Integer::sum);
+    double gkPoints = gkPlayers.stream().map(MisterPlayer::getStreakPerformance).reduce(0.0, Double::sum);
+    double dfPoints = dfPlayers.stream().map(MisterPlayer::getStreakPerformance).reduce(0.0, Double::sum);
+    double mfPoints = mfPlayers.stream().map(MisterPlayer::getStreakPerformance).reduce(0.0, Double::sum);
+    double fwPoints = fwPlayers.stream().map(MisterPlayer::getStreakPerformance).reduce(0.0, Double::sum);
 
     return MisterTeam.builder()
         .owner(dfPlayers.get(0).getOwner())
-        .teamPoints(gkPoints + dfPoints + mfPoints + fwPoints)
+        .teamPoints((int) (gkPoints + dfPoints + mfPoints + fwPoints))
         .teamValue(0)
         .mfs(mfPlayers)
-        .gk(gkPlayers.size() > 0 ? gkPlayers.get(0) : null
-        )
+        .gk(gkPlayers.size() > 0 ? gkPlayers.get(0) : null)
         .dfs(dfPlayers)
         .fws(fwPlayers)
         .build();

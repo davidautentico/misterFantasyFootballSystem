@@ -44,7 +44,7 @@ public class MisterWatchDogProcess implements
     mailSender.setPort(587);
 
     mailSender.setUsername("davidautentico@gmail.com");
-    mailSender.setPassword("gadpkvenunvhypub");
+    mailSender.setPassword("kwbfdoifzbbutilh");
 
     Properties props = mailSender.getJavaMailProperties();
     props.put("mail.transport.protocol", "smtp");

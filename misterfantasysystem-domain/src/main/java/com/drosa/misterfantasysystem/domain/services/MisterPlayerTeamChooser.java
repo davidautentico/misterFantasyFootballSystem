@@ -52,7 +52,7 @@ public class MisterPlayerTeamChooser {
       int gkIndex = ThreadLocalRandom.current().nextInt(0, totalGks);
       MisterPlayer chosenGk = gkPlayers.get(gkIndex).toBuilder().build();
       teamValue += misterPlayerHelper.getPlayerValue(chosenGk, ownerUser);
-      teamPoints += chosenGk.getTotalPoints();
+      teamPoints += chosenGk.getStreakPerformance();
 
       // choose DFs
       List<MisterPlayer> chosenDfs = new ArrayList<>();
@@ -64,7 +64,7 @@ public class MisterPlayerTeamChooser {
         if (!indexSet.contains(idx)) {
           MisterPlayer player = dfPlayers.get(idx).toBuilder().build();
           chosenDfs.add(player);
-          teamPoints += player.getTotalPoints();
+          teamPoints += player.getStreakPerformance();
           teamValue += misterPlayerHelper.getPlayerValue(player, ownerUser);
           indexSet.add(idx);
           count++;
@@ -81,7 +81,7 @@ public class MisterPlayerTeamChooser {
         if (!indexSet.contains(idx)) {
           MisterPlayer player = mfPlayers.get(idx).toBuilder().build();
           chosenMfs.add(player);
-          teamPoints += player.getTotalPoints();
+          teamPoints += player.getStreakPerformance();
           teamValue += misterPlayerHelper.getPlayerValue(player, ownerUser);
           indexSet.add(idx);
           count++;
@@ -98,7 +98,7 @@ public class MisterPlayerTeamChooser {
         if (!indexSet.contains(idx)) {
           MisterPlayer player = fwPlayers.get(idx).toBuilder().build();
           chosenFws.add(player);
-          teamPoints += player.getTotalPoints();
+          teamPoints += player.getStreakPerformance();
           teamValue += misterPlayerHelper.getPlayerValue(player, ownerUser);
           indexSet.add(idx);
           count++;

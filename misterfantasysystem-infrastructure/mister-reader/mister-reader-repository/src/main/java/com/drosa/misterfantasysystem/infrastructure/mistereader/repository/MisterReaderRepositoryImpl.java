@@ -4,6 +4,8 @@ import static java.lang.Thread.sleep;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -193,6 +195,8 @@ public class MisterReaderRepositoryImpl implements MisterReaderRepository {
         }
       }
     }
+    // actual streak
+    List<Integer> actualStreakList = new ArrayList<>();
     // owner wrapper sw-profile
     String ownerStr = "";
     Elements wrapperSwProfile = playerDoc.getElementsByClass("wrapper sw-profile");
@@ -204,7 +208,31 @@ public class MisterReaderRepositoryImpl implements MisterReaderRepository {
           TextNode ownerNode = (TextNode) ownerBox.childNodes().get(2).childNodes().get(1).childNodes().get(0);
           ownerStr = ownerNode.text();
         }
+      }
+      //streak
+      Elements scoreBoxes = wrapperSwProfile.get(0).getElementsByClass("box box-scores");
+      if (scoreBoxes.size()>0){
+          Elements scores = scoreBoxes.get(0).getElementsByClass("line btn btn-player-gw");
 
+          if (scores.size()>0){
+            scores.forEach(score->{
+              int points = 0; //injured = 0
+              Elements scoreDetails = score.getElementsByClass("score ");
+              if (scoreDetails.size()>0){
+                if (scoreDetails.get(0).childNodes().size() > 0) {
+                  TextNode scoreDetailsNode = (TextNode) scoreDetails.get(0).childNodes().get(0);
+                  //coger value
+                  String scoreValue = scoreDetailsNode.text();
+                  try {
+                    points = Integer.parseInt(scoreValue);
+                  }catch(Exception e){
+                    points = 0;
+                  }
+                }
+              }
+              actualStreakList.add(points);
+            });
+          }
       }
     }
     // name
@@ -291,7 +319,15 @@ public class MisterReaderRepositoryImpl implements MisterReaderRepository {
       }
     }
 
+    double streakPerformance = 0.0;
+    double last4weeks = actualStreakList.stream().limit(4).reduce(0, Integer::sum)*1.0;
+    double firstNweeks = actualStreakList.stream().skip(4).reduce(0, Integer::sum)*1.0;
+
+    streakPerformance = (last4weeks*0.7 + firstNweeks*0.3);
+
     return MisterPlayer.builder()
+        .actualStreak(actualStreakList)
+        .streakPerformance(streakPerformance)
         .href(playerHref)
         .owner(ownerStr)
         .name(nameStr)
