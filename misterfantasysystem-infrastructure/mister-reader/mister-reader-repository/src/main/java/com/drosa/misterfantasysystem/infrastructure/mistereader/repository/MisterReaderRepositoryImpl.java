@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.drosa.misterfantasysystem.domain.entities.MisterGameWeekInfo;
 import com.drosa.misterfantasysystem.domain.entities.MisterPlayer;
 import com.drosa.misterfantasysystem.domain.entities.MisterPlayerInfo;
 import com.drosa.misterfantasysystem.domain.enums.PlayerPosition;
@@ -54,23 +55,8 @@ public class MisterReaderRepositoryImpl implements MisterReaderRepository {
     int gameWeek = 0;
 
     try {
-
-      // Login json
-      JsonObject gsonObject = new JsonObject();
-      gsonObject.addProperty("method", "email");
-      gsonObject.addProperty("email", "davidautentico@gmail.com");
-      gsonObject.addProperty("password", "Mister.2508");
-      String payload = new Gson().toJson(gsonObject);
-
-      Document loginDocument = Jsoup.connect(misterReaderConfigRepository.getMisterLoginUrl())
-          .userAgent("Chrome")
-          .header("content-type", "application/json")
-          .header("accept", "application/json")
-          .requestBody(payload)
-          .ignoreContentType(true)
-          .post();
-
-      Map<String, String> cookies = loginDocument.connection().response().cookies();
+      // Login
+      Map<String, String> cookies = login();
 
       // Get players in Market
       Set<String> playerHRefInMarket = getPlayerHrefInMarket(cookies);
@@ -107,6 +93,48 @@ public class MisterReaderRepositoryImpl implements MisterReaderRepository {
         .createdAt(Instant.now())
         .gameWeek(gameWeek)
         .build();
+  }
+
+  @Override
+  public MisterGameWeekInfo getMisterGameWeekInfo() {
+
+    try{
+      // Login
+      Map<String, String> cookies = login();
+
+      // Connect to the info
+      String gameWeek1Url = "https://mister.mundodeportivo.com/more#gameweek/2185";
+      Document gameWeek1Doc = httpHelper.connect(gameWeek1Url, cookies);
+
+      Elements swGameweeks = gameWeek1Doc.getElementsByClass("wrapper sw-gameweek");
+
+
+      log.info(gameWeek1Doc.location());
+    } catch (IOException e) {
+      log.error("Error loading page. Message {}", e.getMessage());
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+  private Map<String, String> login() throws IOException {
+    // Login json
+    JsonObject gsonObject = new JsonObject();
+    gsonObject.addProperty("method", "email");
+    gsonObject.addProperty("email", "davidautentico@gmail.com");
+    gsonObject.addProperty("password", "Mister.2508");
+    String payload = new Gson().toJson(gsonObject);
+
+    Document loginDocument = Jsoup.connect(misterReaderConfigRepository.getMisterLoginUrl())
+        .userAgent("Chrome")
+        .header("content-type", "application/json")
+        .header("accept", "application/json")
+        .requestBody(payload)
+        .ignoreContentType(true)
+        .post();
+
+    return loginDocument.connection().response().cookies();
   }
 
   private Set<String> getPlayerHrefInMarket(Map<String, String> cookies) {
