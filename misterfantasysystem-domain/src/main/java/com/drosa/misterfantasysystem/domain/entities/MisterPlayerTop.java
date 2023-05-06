@@ -1,5 +1,7 @@
 package com.drosa.misterfantasysystem.domain.entities;
 
+import java.util.List;
+
 import com.drosa.misterfantasysystem.domain.enums.PlayerPosition;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,11 +20,24 @@ public class MisterPlayerTop {
 
   private final double avgPoints;
 
+  private final List<MisterPlayer> playerList;
+
   @Override
   public String toString() {
-    return position
+    String header = position
         + " | " + numberOfPlayers
         + " | " + String.format("%,.2f", avgPerformance)
         + " | " + String.format("%,.2f", avgPoints);
+
+    StringBuilder playerLines = new StringBuilder();
+    for (MisterPlayer misterPlayer : playerList) {
+      playerLines.append(misterPlayer.getName()).append(" ")
+          .append(misterPlayer.getSurname()).append(" | ")
+          .append(misterPlayer.getPosition()).append(" | ")
+          .append(String.format("%,.2f", misterPlayer.getStreakPerformance()))
+          .append("\n");
+    }
+
+    return header + " \n " + playerLines.toString().trim();
   }
 }
