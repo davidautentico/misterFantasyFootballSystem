@@ -22,7 +22,6 @@ import com.drosa.misterfantasysystem.domain.enums.PlayerPosition;
 import com.drosa.misterfantasysystem.domain.enums.TeamRef;
 import com.drosa.misterfantasysystem.domain.repositories.MisterReaderRepository;
 import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.helpers.HttpHelper;
-import com.drosa.misterfantasysystem.infrastructure.mistereader.repository.repositories.MisterReaderConfigRepository;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
@@ -38,12 +37,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class MisterReaderRepositoryImpl implements MisterReaderRepository {
 
-  private final MisterReaderConfigRepository misterReaderConfigRepository;
+  private final MisterReaderRepository misterReaderConfigRepository;
 
   private final HttpHelper httpHelper;
 
   public MisterReaderRepositoryImpl(
-      MisterReaderConfigRepository misterReaderConfigRepository,
+      MisterReaderRepository misterReaderConfigRepository,
       HttpHelper httpHelper) {
     this.misterReaderConfigRepository = misterReaderConfigRepository;
     this.httpHelper = httpHelper;
@@ -114,6 +113,24 @@ public class MisterReaderRepositoryImpl implements MisterReaderRepository {
       e.printStackTrace();
     }
 
+    return null;
+  }
+
+  @Override
+  public String getMisterBaseUrl() {
+    //TODO
+    return null;
+  }
+
+  @Override
+  public String getMisterLoginUrl() {
+    //TODO
+    return null;
+  }
+
+  @Override
+  public String getMisterMarketUrl() {
+    //TODO
     return null;
   }
 

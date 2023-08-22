@@ -6,4 +6,10 @@ import com.drosa.misterfantasysystem.domain.entities.MisterPlayerInfo;
 public interface MisterReaderRepository {
   MisterPlayerInfo getPlayerInfo();
   MisterGameWeekInfo getMisterGameWeekInfo();
+
+  String getMisterBaseUrl();
+
+  String getMisterLoginUrl();
+
+  String getMisterMarketUrl();
 }
