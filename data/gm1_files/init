@@ -1,0 +1,57 @@
+(function () {var c = window.__tgconf = window.__tgconf || {};
+c.acId = 44;
+c.appId = 2551;
+c.publicId = 'HTHEDNBX';
+c.sellerId = 'BTU6TAUJ';
+c.domain = 'mister.mundodeportivo.com';
+c.rootPath = 'https://services.insurads.com';
+c.instancePath = c.rootPath;
+c.messagingEnabled = 1;
+c.messagingPath = 'https://msg-02deb6bf3f2d4eb1f.insurads.com/rt-pub/node';
+c.defaultMessagingPath = 'https://messaging.insurads.com/rt-pub/node';
+c.sessionId = '743F363598AE8FF5';
+c.visitorId = c.sessionId;
+c.section = 2971;
+c.g_country = 'ES';
+c.g_region = 'unknown';
+c.d_type = 'Personal computer';
+c.d_browser = 'Chrome';
+c.d_os = 'Windows';
+c.znl = {"1061552":{"tu":1,"conf":{"bottomHeight":0,"showDelay":0,"showCloseDelay":0,"sizes":[{"width":320,"height":50}]},"type":"bottom","dc":"mobile"},"1061551":{"tu":1,"conf":{"bottomHeight":0,"showDelay":0,"showCloseDelay":0,"sizes":[{"width":728,"height":90}]},"type":"bottom","dc":"desktop,tablet"}};
+c.dads = 0;
+c.ivm = 0;
+c.integrations = {"dfp":{"networkCode":"55964524","keyValues":["t"]}};
+c.pid = 20;
+c.cookies = 1;
+c.allowLockedId = 1;
+c.noRefreshCreativeContent = '';
+c.stickyCloseButton = {};
+c.crm = '';
+c.controlHash = 'IIMZEMABJB';
+c.pwt = { noCmpProfile: 23 };
+
+c.scn = '___iat_ses';
+c.scd = 1800;
+c.vcn = '___iat_vis';
+c.vcd = 15552000;
+c.ts = 1692709585323;
+
+
+var loadScripts = 1;
+if (loadScripts) {
+var s0 = document.createElement('script');
+s0.type = 'text/javascript';
+s0.async = true;
+s0.src = 'https://cdn.insurads.com/iat-realtime-7.0.7-ws.js';
+document.getElementsByTagName('HEAD')[0].appendChild(s0);
+
+var s1 = document.createElement('script');
+s1.type = 'text/javascript';
+s1.async = true;
+s1.src = 'https://cdn.insurads.com/iat-1.14.12.js';
+document.getElementsByTagName('HEAD')[0].appendChild(s1);
+}
+
+
+window.__tginitcb && window.__tginitcb();
+})();
