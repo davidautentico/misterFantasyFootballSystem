@@ -13,7 +13,7 @@ public class ConfigurationRepositoryImpl implements ConfigurationRepository {
   @Value("${mister.base-url:https://mister.mundodeportivo.com/}")
   private String misterBaseUrl;
 
-  @Value("${mister.login-url:https://mister.mundodeportivo.com/api2/auth/signin/email}")
+  @Value("${mister.login-url:https://mister.mundodeportivo.com/api2/auth/email?state=eyJwbGF0Zm9ybSI6IndlYiIsInVzZXJBZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xMTMuMC4wLjAgU2FmYXJpLzUzNy4zNiIsImFwcHNmbHllcklkIjpudWxsLCJhcHBzZmx5ZXJDb252ZXJzaW9uRGF0YSI6eyJpbnN0YWxsX3RpbWUiOiIyMDIwLTA5LTAxIDA5OjQ2OjIzLjE0MiIsImFmX3N0YXR1cyI6Ik9yZ2FuaWMiLCJhZl9tZXNzYWdlIjoib3JnYW5pYyBpbnN0YWxsIiwiaXNfZmlyc3RfbGF1bmNoIjpmYWxzZX19}")
   private String misterLoginUrl;
 
   @Value("${mister.market-url:https://mister.mundodeportivo.com/market}")

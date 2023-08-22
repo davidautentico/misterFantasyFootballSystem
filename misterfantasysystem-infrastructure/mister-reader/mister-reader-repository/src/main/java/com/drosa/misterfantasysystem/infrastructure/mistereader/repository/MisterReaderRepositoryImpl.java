@@ -98,7 +98,7 @@ public class MisterReaderRepositoryImpl implements MisterReaderRepository {
   @Override
   public MisterGameWeekInfo getMisterGameWeekInfo() {
 
-    try{
+    try {
       // Login
       Map<String, String> cookies = login();
 
@@ -107,7 +107,6 @@ public class MisterReaderRepositoryImpl implements MisterReaderRepository {
       Document gameWeek1Doc = httpHelper.connect(gameWeek1Url, cookies);
 
       Elements swGameweeks = gameWeek1Doc.getElementsByClass("wrapper sw-gameweek");
-
 
       log.info(gameWeek1Doc.location());
     } catch (IOException e) {
@@ -239,28 +238,28 @@ public class MisterReaderRepositoryImpl implements MisterReaderRepository {
       }
       //streak
       Elements scoreBoxes = wrapperSwProfile.get(0).getElementsByClass("box box-scores");
-      if (scoreBoxes.size()>0){
-          Elements scores = scoreBoxes.get(0).getElementsByClass("line btn btn-player-gw");
+      if (scoreBoxes.size() > 0) {
+        Elements scores = scoreBoxes.get(0).getElementsByClass("line btn btn-player-gw");
 
-          if (scores.size()>0){
-            scores.forEach(score->{
-              int points = 0; //injured = 0
-              Elements scoreDetails = score.getElementsByClass("score ");
-              if (scoreDetails.size()>0){
-                if (scoreDetails.get(0).childNodes().size() > 0) {
-                  TextNode scoreDetailsNode = (TextNode) scoreDetails.get(0).childNodes().get(0);
-                  //coger value
-                  String scoreValue = scoreDetailsNode.text();
-                  try {
-                    points = Integer.parseInt(scoreValue);
-                  }catch(Exception e){
-                    points = 0;
-                  }
+        if (scores.size() > 0) {
+          scores.forEach(score -> {
+            int points = 0; //injured = 0
+            Elements scoreDetails = score.getElementsByClass("score ");
+            if (scoreDetails.size() > 0) {
+              if (scoreDetails.get(0).childNodes().size() > 0) {
+                TextNode scoreDetailsNode = (TextNode) scoreDetails.get(0).childNodes().get(0);
+                //coger value
+                String scoreValue = scoreDetailsNode.text();
+                try {
+                  points = Integer.parseInt(scoreValue);
+                } catch (Exception e) {
+                  points = 0;
                 }
               }
-              actualStreakList.add(points);
-            });
-          }
+            }
+            actualStreakList.add(points);
+          });
+        }
       }
     }
     // name
@@ -323,35 +322,40 @@ public class MisterReaderRepositoryImpl implements MisterReaderRepository {
 
     //21-22 stats
     int totalPoints2122 = 0;
-    Elements player2122StatsElements = playerDoc.getElementsByClass("boxes-2");
-    if (playerStatsElements.size() > 0) { //tenemos panel derecho
-      Elements boxRecords = player2122StatsElements.get(0).getElementsByClass("box box-records");
-      if (boxRecords.size() > 1) {
-        Elements lefts = boxRecords.get(1).getElementsByClass("left");
-        if (lefts.size() > 0) {
-          Elements rights = boxRecords.get(1).getElementsByClass("right");
-          int count = 0;
-          for (Element leftElement : lefts) {
-            TextNode season = (TextNode) leftElement.childNodes().get(0).childNodes().get(0);
-            if (season.text().equalsIgnoreCase("21/22")) {
-              //log.info("tiene 21/22");
-              Element rightElement = rights.get(count);
-              TextNode pointsStr = (TextNode) rightElement.childNodes().get(0);
-              totalPoints2122 = Integer.parseInt(pointsStr.text());
-              break;
-            } else {
-              count++;
+    try {
+
+      Elements player2122StatsElements = playerDoc.getElementsByClass("boxes-2");
+      if (playerStatsElements.size() > 0) { //tenemos panel derecho
+        Elements boxRecords = player2122StatsElements.get(0).getElementsByClass("box box-records");
+        if (boxRecords.size() > 1) {
+          Elements lefts = boxRecords.get(1).getElementsByClass("left");
+          if (lefts.size() > 0) {
+            Elements rights = boxRecords.get(1).getElementsByClass("right");
+            int count = 0;
+            for (Element leftElement : lefts) {
+              TextNode season = (TextNode) leftElement.childNodes().get(0).childNodes().get(0);
+              if (season.text().equalsIgnoreCase("21/22")) {
+                //log.info("tiene 21/22");
+                Element rightElement = rights.get(count);
+                TextNode pointsStr = (TextNode) rightElement.childNodes().get(0);
+                totalPoints2122 = Integer.parseInt(pointsStr.text());
+                break;
+              } else {
+                count++;
+              }
             }
           }
         }
       }
+    } catch (Exception e) {
+      log.warn("Error capturing info from <{}>, errpr <{}>", playerHref, e.getMessage());
     }
 
     double streakPerformance = 0.0;
-    double last4weeks = actualStreakList.stream().limit(4).reduce(0, Integer::sum)*1.0;
-    double firstNweeks = actualStreakList.stream().skip(4).reduce(0, Integer::sum)*1.0;
+    double last4weeks = actualStreakList.stream().limit(4).reduce(0, Integer::sum) * 1.0;
+    double firstNweeks = actualStreakList.stream().skip(4).reduce(0, Integer::sum) * 1.0;
 
-    streakPerformance = (last4weeks*0.7 + firstNweeks*0.3);
+    streakPerformance = (last4weeks * 0.7 + firstNweeks * 0.3);
 
     return MisterPlayer.builder()
         .actualStreak(actualStreakList)
