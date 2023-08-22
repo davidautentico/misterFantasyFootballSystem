@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+misterfantasysystem-domain/.mvn
+misterfantasysystem-domain/mvnw
+misterfantasysystem-domain/mvnw.cmd
