@@ -27,10 +27,18 @@ public class MisterWatchDogProcess implements
 
   private final MisterPlayerReportUseCase misterPlayerReportUseCase;
 
+  private final JavaMailSenderImpl mailSender;
+
   public MisterWatchDogProcess(HelperConfigRepository helperConfigRepository,
       MisterPlayerReportUseCase misterPlayerReportUseCase) {
     this.helperConfigRepository = helperConfigRepository;
     this.misterPlayerReportUseCase = misterPlayerReportUseCase;
+
+    mailSender = new JavaMailSenderImpl();
+    mailSender.setHost("smtp.gmail.com");
+    mailSender.setPort(587);
+    mailSender.setUsername("davidautentico@gmail.com");
+    mailSender.setPassword("kwbfdoifzbbutilh");
   }
 
   @Override
@@ -39,18 +47,13 @@ public class MisterWatchDogProcess implements
 
     log.info("Comenzando el watchdog...");
 
-    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-    mailSender.setHost("smtp.gmail.com");
-    mailSender.setPort(587);
-
-    mailSender.setUsername("davidautentico@gmail.com");
-    mailSender.setPassword("kwbfdoifzbbutilh");
-
     Properties props = mailSender.getJavaMailProperties();
     props.put("mail.transport.protocol", "smtp");
     props.put("mail.smtp.auth", "true");
     props.put("mail.smtp.starttls.enable", "true");
     props.put("mail.debug", "true");
+
+    //trySendEmailTest();
 
     int numTries = 12000;
     int tries = 0;
@@ -74,13 +77,16 @@ public class MisterWatchDogProcess implements
           MisterPlayerReport actualMisterPlayerReport = misterPlayerReport.toBuilder().misterTeamBestTeams(List.of(bestTeam)).build();
           // TEST SEND EMAIL
           SimpleMailMessage msg = new SimpleMailMessage();
+          msg.setFrom("davidautentico@gmail.com");
           msg.setTo("davidautentico@gmail.com");
 
           msg.setSubject("Mister Report, best team found: " + hasToUpdated);
 
           msg.setText(actualMisterPlayerReport.printReport() + " \n hashCode=" + hashCode);
 
-          mailSender.send(msg);
+          if (!trySendEmail(msg)) {
+            //reconnectToSmtp();
+          }
 
           lastHashCode = hashCode;
         }
@@ -88,6 +94,35 @@ public class MisterWatchDogProcess implements
       sleep(5 * 60 * 1000);
       tries++;
     }
+  }
+
+  private void trySendEmailTest() {
+    SimpleMailMessage msg = new SimpleMailMessage();
+    msg.setFrom("davidautentico@gmail.com");
+    msg.setTo("davidautentico@gmail.com");
+
+    msg.setSubject("mail test");
+
+    msg.setText("Prueba");
+
+    try {
+      mailSender.send(msg);
+    } catch (Exception e) {
+      System.err.println("Error sending mail: " + e.getMessage());
+
+    }
+  }
+
+  private boolean trySendEmail(SimpleMailMessage msg) {
+
+    try {
+      mailSender.send(msg);
+    } catch (Exception e) {
+      System.err.println("Error sending mail: " + e.getMessage());
+      return false;
+    }
+
+    return true;
   }
 
 }

@@ -37,7 +37,7 @@ public class MisterBestTeamHelper {
     double fwPoints = fwPlayers.stream().map(MisterPlayer::getStreakPerformance).reduce(0.0, Double::sum);
 
     return MisterTeam.builder()
-        .owner(dfPlayers.get(0).getOwner())
+        .owner(dfPlayers.size() > 0 ? dfPlayers.get(0).getOwner() : "EMPTY_OWNER")
         .teamPoints((int) (gkPoints + dfPoints + mfPoints + fwPoints))
         .teamValue(0)
         .mfs(mfPlayers)

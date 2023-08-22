@@ -98,36 +98,60 @@ public class MisterPlayerReportUseCase {
         .sorted(Comparator.comparing(MisterPlayer::getPosition).thenComparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(3).collect(Collectors.toList());
     int lastDfIndex = ownerDFs.size() > 2 ? 2 : ownerDFs.size() - 1;
-    double ownerdfPoints = ownerDFs.get(lastDfIndex).getStreakPerformance();
-    double ownerdfPerformance = ownerDFs.get(lastDfIndex).getStreakPerformance() / (ownerDFs.get(lastDfIndex).getValue() * 1.0 / 1000000);
+
+    double ownerdfPoints = 0;
+    double ownerdfPerformance = 0;
+
+    if (lastDfIndex >= 0) {
+      ownerdfPoints = ownerDFs.get(lastDfIndex).getStreakPerformance();
+      ownerdfPerformance = ownerDFs.get(lastDfIndex).getStreakPerformance() / (ownerDFs.get(lastDfIndex).getValue() * 1.0 / 1000000);
+    }
 
     List<MisterPlayer> ownerMFs = ownerPlayers.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.MF))
         .sorted(Comparator.comparing(MisterPlayer::getPosition).thenComparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(4).collect(Collectors.toList());
     int lastMfIndex = ownerMFs.size() > 3 ? 3 : ownerMFs.size() - 1;
-    double ownermfPoints = ownerMFs.get(lastMfIndex).getStreakPerformance();
-    double ownermfPerformance = ownerMFs.get(lastMfIndex).getStreakPerformance() / (ownerMFs.get(lastMfIndex).getValue() * 1.0 / 1000000);
+
+    double ownermfPoints = 0;
+    double ownermfPerformance = 0;
+
+    if (lastMfIndex >= 0) {
+      ownermfPoints = ownerMFs.get(lastMfIndex).getStreakPerformance();
+      ownermfPerformance = ownerMFs.get(lastMfIndex).getStreakPerformance() / (ownerMFs.get(lastMfIndex).getValue() * 1.0 / 1000000);
+    }
 
     List<MisterPlayer> ownerFWs = ownerPlayers.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.FW))
         .sorted(Comparator.comparing(MisterPlayer::getPosition).thenComparing(MisterPlayer::getStreakPerformance).reversed())
         .limit(3).collect(Collectors.toList());
     int lastFWIndex = ownerFWs.size() > 2 ? 2 : ownerFWs.size() - 1;
-    double ownerfwPoints = ownerFWs.get(lastFWIndex).getStreakPerformance();
-    double ownerfwPerformance = ownerFWs.get(lastFWIndex).getStreakPerformance() / (ownerFWs.get(lastFWIndex).getValue() * 1.0 / 1000000);
+
+    double ownerfwPoints = 0;
+    double ownerfwPerformance = 0;
+
+    if (lastFWIndex >= 0) {
+      ownerfwPoints = ownerFWs.get(lastFWIndex).getStreakPerformance();
+      ownerfwPerformance = ownerFWs.get(lastFWIndex).getStreakPerformance() / (ownerFWs.get(lastFWIndex).getValue() * 1.0 / 1000000);
+    }
 
     MisterTeam ownerBestTeam = misterBestTeamHelper.getBestTeamStrategic(ownerPlayers);
     int totalOwnerValue = ownerPlayers.stream().map(MisterPlayer::getValue).reduce(0L, Long::sum).intValue();
     int totalOwnerPoints = ownerBestTeam.getTeamPoints();
 
-    List<MisterTeam> misterTeamList = misterPlayerTeamChooser.dispatch(actualPlayerList, 81000000, ownerUser);
+    List<MisterTeam> misterTeamList = misterPlayerTeamChooser.dispatch(actualPlayerList, 103000000, ownerUser);
 
     System.out.println("*** OWNER PLAYERS ***");
     ownerPlayers.forEach(player -> {
       System.out.println(player.printStats());
     });
 
+    double finalOwnerfwPoints = ownerfwPoints;
+    double finalOwnerfwPerformance = ownerfwPerformance;
+    double finalOwnerdfPoints = ownerdfPoints;
+    double finalOwnermfPoints = ownermfPoints;
+    double finalOwnermfPerformance = ownermfPerformance;
+    double finalOwnerdfPerformance = ownerdfPerformance;
     List<MisterPlayer> buyablePlayers = actualPlayerList.stream().filter(player ->
             player.isInMarket() || misterPlayerHelper.playerNotOwner(player, ownerUser))
         .map(player -> {
@@ -136,26 +160,26 @@ public class MisterPlayerReportUseCase {
           double playerPerformance = misterPlayerHelper.getPerformance(player, ownerUser);
 
           if (player.getPosition() == PlayerPosition.DF) {
-            if (playerPoints >= 0.8 * ownerdfPoints) {
-              if (playerPoints >= ownerdfPoints && playerPerformance >= ownerdfPerformance) {
+            if (playerPoints >= 0.8 * finalOwnerdfPoints) {
+              if (playerPoints >= finalOwnerdfPoints && playerPerformance >= finalOwnerdfPerformance) {
                 marketRecommendation = MarketRecommendation.IMPORTANT_BUY;
-              } else if (playerPoints > ownerdfPoints || playerPerformance > ownerdfPerformance) {
+              } else if (playerPoints > finalOwnerdfPoints || playerPerformance > finalOwnerdfPerformance) {
                 marketRecommendation = MarketRecommendation.NORMAL_BUY;
               }
             }
           } else if (player.getPosition() == PlayerPosition.MF) {
-            if (playerPoints >= 0.8 * ownermfPoints) {
-              if (playerPoints >= ownermfPoints && playerPerformance >= ownermfPerformance) {
+            if (playerPoints >= 0.8 * finalOwnermfPoints) {
+              if (playerPoints >= finalOwnermfPoints && playerPerformance >= finalOwnermfPerformance) {
                 marketRecommendation = MarketRecommendation.IMPORTANT_BUY;
-              } else if (playerPoints > ownermfPoints || playerPerformance > ownermfPerformance) {
+              } else if (playerPoints > finalOwnermfPoints || playerPerformance > finalOwnermfPerformance) {
                 marketRecommendation = MarketRecommendation.NORMAL_BUY;
               }
             }
           } else if (player.getPosition() == PlayerPosition.FW) {
-            if (playerPoints >= 0.8 * ownerfwPoints) {
-              if (playerPoints >= ownerfwPoints && playerPerformance >= ownerfwPerformance) {
+            if (playerPoints >= 0.8 * finalOwnerfwPoints) {
+              if (playerPoints >= finalOwnerfwPoints && playerPerformance >= finalOwnerfwPerformance) {
                 marketRecommendation = MarketRecommendation.IMPORTANT_BUY;
-              } else if (playerPoints > ownerfwPoints || playerPerformance > ownerfwPerformance) {
+              } else if (playerPoints > finalOwnerfwPoints || playerPerformance > finalOwnerfwPerformance) {
                 marketRecommendation = MarketRecommendation.NORMAL_BUY;
               }
             }
@@ -185,7 +209,7 @@ public class MisterPlayerReportUseCase {
     List<MisterPlayer> gkPlayers = actualPlayerList.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.GK))
         .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
-        .limit(6)
+        .limit(10)
         .collect(Collectors.toList());
     double gkAvgPoints = gkPlayers.stream().mapToDouble(MisterPlayer::getStreakPerformance).average().getAsDouble();
     double gkPerformance =
@@ -195,7 +219,7 @@ public class MisterPlayerReportUseCase {
     List<MisterPlayer> dfPlayers = actualPlayerList.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.DF))
         .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
-        .limit(18)
+        .limit(30)
         .collect(Collectors.toList());
     double dfAvgPoints = dfPlayers.stream().mapToDouble(MisterPlayer::getStreakPerformance).average().getAsDouble();
     double dfPerformance =
@@ -205,7 +229,7 @@ public class MisterPlayerReportUseCase {
     List<MisterPlayer> mfPlayers = actualPlayerList.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.MF))
         .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
-        .limit(24)
+        .limit(30)
         .collect(Collectors.toList());
     double mfAvgPoints = mfPlayers.stream().mapToDouble(MisterPlayer::getStreakPerformance).average().getAsDouble();
     double mfPerformance =
@@ -216,7 +240,7 @@ public class MisterPlayerReportUseCase {
     List<MisterPlayer> fwPlayers = actualPlayerList.stream()
         .filter(player -> player.getPosition().equals(PlayerPosition.FW))
         .sorted(Comparator.comparing(MisterPlayer::getStreakPerformance).reversed())
-        .limit(18)
+        .limit(20)
         .collect(Collectors.toList());
     double fwAvgPoints = fwPlayers.stream().mapToDouble(MisterPlayer::getStreakPerformance).average().getAsDouble();
     double fwPerformance =
@@ -226,30 +250,34 @@ public class MisterPlayerReportUseCase {
 
     MisterPlayerTop gkMisterPlayerTop = MisterPlayerTop.builder()
         .position(PlayerPosition.GK)
-        .numberOfPlayers(6)
+        .numberOfPlayers(10)
         .avgPoints(gkAvgPoints)
         .avgPerformance(gkPerformance)
+        .playerList(gkPlayers)
         .build();
 
     MisterPlayerTop dfMisterPlayerTop = MisterPlayerTop.builder()
         .position(PlayerPosition.DF)
-        .numberOfPlayers(18)
+        .numberOfPlayers(30)
         .avgPoints(dfAvgPoints)
         .avgPerformance(dfPerformance)
+        .playerList(dfPlayers)
         .build();
 
     MisterPlayerTop mfMisterPlayerTop = MisterPlayerTop.builder()
         .position(PlayerPosition.MF)
-        .numberOfPlayers(24)
+        .numberOfPlayers(30)
         .avgPoints(mfAvgPoints)
         .avgPerformance(mfPerformance)
+        .playerList(mfPlayers)
         .build();
 
     MisterPlayerTop fwMisterPlayerTop = MisterPlayerTop.builder()
         .position(PlayerPosition.FW)
-        .numberOfPlayers(18)
+        .numberOfPlayers(20)
         .avgPoints(fwAvgPoints)
         .avgPerformance(fwPerformance)
+        .playerList(fwPlayers)
         .build();
 
     return Optional.of(MisterPlayerReport.builder()
